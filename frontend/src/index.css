@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@theme {
+  --font-milonga: "Milonga", serif;
+  --font-manrope: "Manrope", serif;
+}
