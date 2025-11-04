@@ -22,7 +22,7 @@ const Testi = () => {
     },
   ]
   return (
-    <section className='bg-[#2C3E50] text-white  relative'>
+    <section className='bg-[#2C3E50] text-white h-[900px] relative'>
       
       <div>
         <main className='flex flex-row'>
