@@ -1,4 +1,4 @@
-import React from 'react'
+import { Link } from "react-router";
 
 const Hero = () => {
   return (
@@ -20,7 +20,9 @@ const Hero = () => {
           </ul>
         </div>
         <div>
-          <button className='text-white bg-[#E67E22] font-bold p-4 text-xl rounded-2xl font-manrope'>Sign Up</button>
+          <Link to="/signup">
+            <button className='text-white bg-[#E67E22] font-bold p-4 text-xl rounded-2xl font-manrope'>Sign Up</button>
+          </Link>
         </div>
       </nav>
       <div className='bg-[#56585C]/60 w-screen h-0.5'>.</div>

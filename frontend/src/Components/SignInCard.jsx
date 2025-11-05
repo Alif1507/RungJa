@@ -38,16 +38,6 @@ export default function SignInCard({ onSubmit }) {
             />
           </Field>
 
-          <Field>
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              name="username"
-              value={form.username}
-              onChange={handleChange}
-              required
-            />
-          </Field>
 
           <Field>
             <Label htmlFor="password">Password</Label>
@@ -61,17 +51,6 @@ export default function SignInCard({ onSubmit }) {
             />
           </Field>
 
-          <Field>
-            <Label htmlFor="confirm">Confirm Password</Label>
-            <Input
-              id="confirm"
-              type="password"
-              name="confirm"
-              value={form.confirm}
-              onChange={handleChange}
-              required
-            />
-          </Field>
 
           <p className="text-sm text-neutral-500">Belum Punya Akun?</p>
 
