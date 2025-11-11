@@ -7,93 +7,80 @@ use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Cart::all();
+        $items = Cart::where('user_id', $request->user()->id)
+            ->latest()
+            ->get();
 
         return response()->json([
-            "message" => "Success",
-            "data" => $data
-        ],200);
+            'message' => 'Success',
+            'data' => $items,
+        ], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $validateData = $request->validate([
-            "item_name" => "required|string",
-            "quantity" => "required|integer",
-            "price" => "required|integer"
+        $validated = $request->validate([
+            'item_name' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0',
         ]);
 
-        $cart = Cart::create($validateData);
+        $cart = Cart::create([
+            'user_id' => $request->user()->id,
+            ...$validated,
+        ]);
 
         return response()->json([
-            "message" => "item sukses ke add ke cart",
-            "data" => $cart
+            'message' => 'Item sukses ditambahkan ke cart',
+            'data' => $cart,
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Cart $cart)
+    public function show(Request $request, Cart $cart)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Cart $cart)
-    {
-        
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
-    {
-        $cart = Cart::findOrFail($id);
-
-        $validateData = $request->validate([
-            "item_name" => "required|string",
-            "quantity" => "required|integer",
-            "price" => "required|integer"
-        ]);
-
-        $cart->update($validateData);
+        // $this->ensureOwner($request, $cart);
 
         return response()->json([
-            "message" => "item sukses terupdate",
-            "data" => $cart
+            'message' => 'Success',
+            'data' => $cart,
         ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Cart $cart)
+    public function update(Request $request, Cart $cart)
     {
+        // $this->ensureOwner($request, $cart);
+
+        $validated = $request->validate([
+            'item_name' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $cart->update($validated);
+
+        return response()->json([
+            'message' => 'Item sukses diperbarui',
+            'data' => $cart,
+        ], 200);
+    }
+
+    public function destroy(Request $request, Cart $cart)
+    {
+        // $this->ensureOwner($request, $cart);
+
         $cart->delete();
 
         return response()->json([
-            "message" => "item sukses terhapus",
-
+            'message' => 'Item sukses terhapus',
         ], 200);
     }
+
+    // private function ensureOwner(Request $request, Cart $cart): void
+    // {
+    //     if ($cart->user_id !== $request->user()->id) {
+    //         abort(403, 'Tidak boleh mengakses cart milik pengguna lain');
+    //     }
+    // }
 }

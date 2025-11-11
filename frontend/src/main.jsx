@@ -9,6 +9,8 @@ import "@fontsource/montserrat";
 import "@fontsource/poppins/700.css";
 import Signup from './Signup.jsx'
 import Signin from './Signin.jsx'
+import Admin from './Admin.jsx'
+import Menu from './Menu.jsx'
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -16,6 +18,8 @@ createRoot(document.getElementById('root')).render(
       <Route path="/" element={<App />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/signin" element={<Signin />} />
+      <Route path="/admin" element={<Admin />} />
+      <Route path="/menu" element={<Menu />} />
     </Routes>
   </BrowserRouter>,
 )
