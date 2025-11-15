@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 
-export default function SignInCard({ onSubmit }) {
-  const [form, setForm] = useState({ email: "", username: "", password: "", confirm: "" });
-  const [error, setError] = useState("");
+export default function SignInCard({ onSubmit, loading = false, error = "" }) {
+  const [form, setForm] = useState({ email: "", password: "" });
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -10,18 +9,24 @@ export default function SignInCard({ onSubmit }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    setError("");
-    if (form.password !== form.confirm) {
-      setError("Passwords do not match.");
-      return;
-    }
     onSubmit?.(form);
   }
 
   return (
-    <div className="min-h-dvh  flex items-center justify-center p-4">
-      <div className="w-full max-w-[28rem] rounded-3xl border border-black/20 bg-white shadow-[0_0_0_6px_rgba(0,0,0,0.05)] p-6 sm:p-8">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-center tracking-tight mb-6">Sign In</h1>
+    <div className="flex min-h-[450px] items-center justify-center p-4">
+      <div className="w-full rounded-3xl border border-black/10 bg-white p-6 shadow-[0_10px_50px_rgba(0,0,0,0.08)] sm:p-8">
+        <h1 className="mb-2 text-center text-3xl font-extrabold tracking-tight">
+          Masuk ke Akun
+        </h1>
+        <p className="mb-6 text-center text-sm text-neutral-500">
+          Gunakan email dan password yang sudah terdaftar.
+        </p>
+
+        {error && (
+          <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Field>
@@ -30,14 +35,13 @@ export default function SignInCard({ onSubmit }) {
               id="email"
               type="email"
               name="email"
-              placeholder=""
+              placeholder="kamu@email.com"
               value={form.email}
               onChange={handleChange}
               autoComplete="email"
               required
             />
           </Field>
-
 
           <Field>
             <Label htmlFor="password">Password</Label>
@@ -51,18 +55,12 @@ export default function SignInCard({ onSubmit }) {
             />
           </Field>
 
-
-          <p className="text-sm text-neutral-500">Belum Punya Akun?</p>
-
-          {error && (
-            <div className="text-sm text-red-600 -mt-3">{error}</div>
-          )}
-
           <button
             type="submit"
-            className="w-full rounded-2xl bg-[#2F3E4B] px-5 py-3 text-base sm:text-lg font-extrabold text-white tracking-wide disabled:opacity-60"
+            className="w-full rounded-2xl bg-[#2F3E4B] px-5 py-3 text-base font-extrabold tracking-wide text-white disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={loading}
           >
-            Sign In
+            {loading ? "Sedang memproses..." : "Masuk"}
           </button>
         </form>
       </div>
@@ -82,7 +80,7 @@ function Input(props) {
   return (
     <input
       {...props}
-      className="w-full bg-transparent outline-none border-0 border-b border-neutral-300 focus:border-neutral-600 focus:ring-0 px-0 py-2"
+      className="w-full border-b border-neutral-300 bg-transparent px-0 py-2 outline-none focus:border-neutral-600 focus:ring-0"
     />
   );
 }
