@@ -12,6 +12,11 @@ class Menu extends Model
         'category',
         'price',
         'stock',
-        'image',
+        'image_url',
+    ];
+
+    protected $casts = [
+        'price' => 'integer',
+        'stock' => 'integer',
     ];
 }

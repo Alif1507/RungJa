@@ -18,6 +18,15 @@ return [
         'token' => env('POSTMARK_TOKEN'),
     ],
 
+    'midtrans' => [
+        'server_key'    => env('MIDTRANS_SERVER_KEY'),
+        'client_key'    => env('MIDTRANS_CLIENT_KEY'),
+        'is_production' => env('MIDTRANS_IS_PRODUCTION', false),
+        'stub'          => env('MIDTRANS_STUB', true),
+        'fallback_on_failure' => env('MIDTRANS_FALLBACK_ON_FAILURE', true),
+    ],
+
+
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],
