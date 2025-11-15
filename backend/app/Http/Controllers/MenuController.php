@@ -10,14 +10,20 @@ class MenuController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $menus = Menu::latest()->paginate(10);
+         $query = Menu::query()->latest();
 
-        return response()->json([
-            "message" => "success",
-            "data" => $menus
-        ], 200);
+    if ($category = $request->query('category')) {
+        $query->where('category', $category);
+    }
+
+    $menus = $query->paginate(10);
+
+    return response()->json([
+        "message" => "success",
+        "data"    => $menus,
+    ], 200);
     }
 
 
@@ -30,6 +36,7 @@ class MenuController extends Controller
             "name" => "required|string|max:255",
             "decription" => "nullable|string",
             "price" => "required|integer|min:0",
+            "category"   => "required|in:makanan,minuman",
             "image_url" => "nullable|url",
             "stock" => "required|integer|min:0"
 
@@ -62,6 +69,7 @@ class MenuController extends Controller
          $validated = $request->validate([
             "name" => "required|string|max:255",
             "decription" => "nullable|string",
+            "category"   => "required|in:makanan,minuman",
             "price" => "required|integer|min:0",
             "image_url" => "nullable|url",
             "stock" => "required|integer|min:0"

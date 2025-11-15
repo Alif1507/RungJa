@@ -11,12 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // carts
         Schema::create('carts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("user_id")->constrained()->onDelete("cascade");
-            $table->string("item_name");
-            $table->unsignedInteger('quantity');
-            $table->unsignedBigInteger('price');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->enum('status', ['active', 'checked_out'])->default('active');
+            $table->timestamps();
+        });
+
+        // cart_items
+        Schema::create('cart_items', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('cart_id')->constrained()->onDelete('cascade');
+            $table->foreignId('menu_id')->constrained()->onDelete('cascade'); // relasi ke menus
+            $table->integer('quantity');
+            $table->decimal('price', 10, 2); // snapshot harga
             $table->timestamps();
         });
     }
@@ -26,6 +35,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('cart_items');
         Schema::dropIfExists('carts');
     }
 };

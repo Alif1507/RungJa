@@ -3,84 +3,86 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\Menu;
+use App\Models\User;
 use Illuminate\Http\Request;
 
+// app/Http/Controllers/Api/CartController.php
 class CartController extends Controller
 {
-    public function index(Request $request)
+    protected function getActiveCart(User $user): Cart
     {
-        $items = Cart::where('user_id', $request->user()->id)
-            ->latest()
-            ->get();
-
-        return response()->json([
-            'message' => 'Success',
-            'data' => $items,
-        ], 200);
+        return Cart::firstOrCreate(
+            ['user_id' => $user->id, 'status' => 'active'],
+            []
+        );
     }
 
-    public function store(Request $request)
+    public function show(Request $request)
     {
-        $validated = $request->validate([
-            'item_name' => 'required|string|max:255',
+        $cart = $this->getActiveCart($request->user())
+            ->load('items.menu');
+
+        return $cart;
+    }
+
+    public function addItem(Request $request)
+    {
+        $data = $request->validate([
+            'menu_id' => 'required|exists:menus,id',
+            'quantity'   => 'required|integer|min:1',
+        ]);
+
+        $user = $request->user();
+        $cart = $this->getActiveCart($user);
+
+        $menu = Menu::findOrFail($data['menu_id']);
+
+        $item = CartItem::where('cart_id', $cart->id)
+            ->where('menu_id', $menu->id)
+            ->first();
+
+        if ($item) {
+            $item->quantity += $data['quantity'];
+            $item->save();
+        } else {
+            $item = CartItem::create([
+                'cart_id'    => $cart->id,
+                'menu_id' => $menu->id,
+                'quantity'   => $data['quantity'],
+                'price'      => $menu->price,
+            ]);
+        }
+
+        return $cart->fresh('items.menu');
+    }
+
+    public function updateItem(Request $request, CartItem $item)
+    {
+        // ensure item belongs to current user
+        if ($item->cart->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        $data = $request->validate([
             'quantity' => 'required|integer|min:1',
-            'price' => 'required|numeric|min:0',
         ]);
 
-        $cart = Cart::create([
-            'user_id' => $request->user()->id,
-            ...$validated,
-        ]);
-
-        return response()->json([
-            'message' => 'Item sukses ditambahkan ke cart',
-            'data' => $cart,
-        ], 201);
+        $item->update($data);
+        return $item->cart->fresh('items.menu');
     }
 
-    public function show(Request $request, Cart $cart)
+    public function removeItem(Request $request, CartItem $item)
     {
-        // $this->ensureOwner($request, $cart);
+        if ($item->cart->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
 
-        return response()->json([
-            'message' => 'Success',
-            'data' => $cart,
-        ], 200);
+        $cart = $item->cart;
+        $item->delete();
+
+        return $cart->fresh('items.menu');
     }
-
-    public function update(Request $request, Cart $cart)
-    {
-        // $this->ensureOwner($request, $cart);
-
-        $validated = $request->validate([
-            'item_name' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:1',
-            'price' => 'required|numeric|min:0',
-        ]);
-
-        $cart->update($validated);
-
-        return response()->json([
-            'message' => 'Item sukses diperbarui',
-            'data' => $cart,
-        ], 200);
-    }
-
-    public function destroy(Request $request, Cart $cart)
-    {
-        // $this->ensureOwner($request, $cart);
-
-        $cart->delete();
-
-        return response()->json([
-            'message' => 'Item sukses terhapus',
-        ], 200);
-    }
-
-    // private function ensureOwner(Request $request, Cart $cart): void
-    // {
-    //     if ($cart->user_id !== $request->user()->id) {
-    //         abort(403, 'Tidak boleh mengakses cart milik pengguna lain');
-    //     }
-    // }
 }
+

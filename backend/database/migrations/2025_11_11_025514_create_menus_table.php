@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->string("name");
-            $table->text("decription")->nullable();
+            $table->text("description")->nullable();
             $table->unsignedBigInteger("price");
+            $table->enum('category', ['makanan', 'minuman']);
             $table->string("image_url")->nullable();
             $table->integer("stock")->default(0);
             $table->timestamps();
